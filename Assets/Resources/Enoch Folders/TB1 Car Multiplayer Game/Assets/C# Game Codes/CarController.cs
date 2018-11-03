@@ -2,38 +2,48 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class CarController : MonoBehaviour {
 
-    public float verticalMovement;
-    public float horizontalMovement;
-    public float brakeMotion;
-    public float steeringAngle;
-    public float maxSteerAngle = 30;
-    public float motorTorquePower = 50;
-    public float brakeTorquePower = 100;
-    public float brakingPower = 50f;
-    public float MaxSpeed;
-    public float StandardMaxSpeed = 150;
-
-
+    // Car Movement 
+    float verticalMovement;
+    float horizontalMovement;
+    float steeringAngle;
+    float maxSteerAngle = 30;
+    float maxSpeed;
+    public float setMaxSpeed;
     public float actualSpeed { get { return rb.velocity.magnitude * 2.23693629f; } }
+    public float motorTorquePower;
+    public float brakeTorquePower;
+    public float brakingPower = 50f;
 
-    Rigidbody rb;
+    // Braking bools
+    private bool isHandBraking;
+    private bool isBraking;
+
+    //Nitrous system pressing E and out
+    bool isNitrousOn = false;
+    public float maxNitroSpeed; // maximum speed the car go in nitrous mode
+    float newTorquePower = 1000;
+    float oldTorquePower = 500;
+
+    //Updating Nitrous Values 
+    public float currentNitro; // will be the max nitro
+    float maxNitro = 100;// how much nitrous do we have.
+
+    // Car Mathematics (Vectors, Quarternion, Rigidbody, Transforms and WheelCollider)
     private Vector3 wheelPos;
     private Quaternion wheelRot;
-
+    private Rigidbody rb;
     public Transform transformWheelFrontLeft, transformWheelFrontRight;
     public Transform transformWheelRearLeft, transformWheelRearRight;
-
     public WheelCollider wheelFrontLeft, wheelFrontRight;
     public WheelCollider wheelRearLeft, wheelRearRight;
 
-    private bool isBraking;
-    private bool isHandBraking;
-
-    private void Start()
+    void Start()
     {
-        rb = FindObjectOfType<Rigidbody>();
+        rb = FindObjectOfType<Rigidbody>(); // get the rigidbody thats attached to the car..
+        currentNitro = maxNitro; // current nitro is now equal to the max nitro (100 at the start)
     }
 
     // Update is called once per frame
@@ -42,9 +52,12 @@ public class CarController : MonoBehaviour {
         SetInput();
         SteerCar();
         AccelerateCar();
+        NewNitroSystem();
         HandBrakeCar();
         CarBraking();
+        UpdateNitroValue();
         UpdateWheelMotions();
+        Debug.Log(currentNitro);
     }
 
     void SetInput()
@@ -62,14 +75,13 @@ public class CarController : MonoBehaviour {
         steeringAngle = maxSteerAngle * horizontalMovement;
         wheelFrontLeft.steerAngle = steeringAngle;
         wheelFrontRight.steerAngle = steeringAngle;
-
     }
 
     void AccelerateCar()
     {
-        MaxSpeed = StandardMaxSpeed;
+        maxSpeed = setMaxSpeed;
 
-        if (actualSpeed > MaxSpeed)
+        if (actualSpeed >= setMaxSpeed)
         {
             verticalMovement = 0;
         }
@@ -80,7 +92,92 @@ public class CarController : MonoBehaviour {
         wheelFrontRight.motorTorque = motorTorquePower * verticalMovement;
         wheelRearLeft.motorTorque = motorTorquePower * verticalMovement;
         wheelRearRight.motorTorque = motorTorquePower * verticalMovement;
+    }
 
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        // if you collide with another car
+        // give the player +10 nitro
+        if (collision.gameObject.name == "Cube")
+        {
+            UpdateNitroRate(0, 10);
+        }
+    }
+
+    void NewNitroSystem()
+    {
+        // pass the max speed assigned and set it in another variable.
+        maxSpeed = setMaxSpeed;
+
+        // if the 'E' key is PRESSED
+        // and the nitrous has not been activated
+        // turn the nitrous on and increase the torque power of the car.
+        // with nitrous on the car has the ability to reach the max nitro speed
+        // else if 'E' key is RELEASED then revert back to the normal torque power of the car (no nitrous)
+        if (Input.GetKey(KeyCode.E) && !isNitrousOn)
+        {
+            isNitrousOn = true;
+            motorTorquePower = newTorquePower;
+            setMaxSpeed = maxNitroSpeed;
+            Debug.Log("Nitro activated");
+        }
+        else if(Input.GetKeyUp(KeyCode.E) && isNitrousOn)
+        { 
+            isNitrousOn = false;
+            motorTorquePower = oldTorquePower;
+            Debug.Log("nitrous deactivated");
+        }
+
+        // if the nitro value is equal to zero OR is equal to 5
+        // dont boost...
+        if (Input.GetKey(KeyCode.E) && isNitrousOn && (currentNitro <= 0) || (currentNitro <= 5))
+        {
+            isNitrousOn = false;
+            motorTorquePower = oldTorquePower;
+        }
+    }
+
+    void UpdateNitroRate(int downRate, int upRate)
+    {
+        // this function allows the ability to
+        // either..
+        // decrease the nitro value when pressed
+        // increase the nitro value when released
+
+        currentNitro -= downRate * Time.deltaTime;
+        currentNitro += upRate;
+    }
+
+    void IncreaseNitroValue()
+    {
+        UpdateNitroRate(0, 1);
+        Debug.Log("Refilling Nitro Value");
+    }
+
+    void UpdateNitroValue()
+    {
+        // This function updates the nitro value based on whether the E key is pressed or not
+        // If the key is pressed, decrease the nitro value
+
+        if (Input.GetKey(KeyCode.E))
+        {
+            UpdateNitroRate(20, 0);
+            Debug.Log("Decreased Nitro Value");
+        }
+
+        // Safety Checks
+        // Making sure the values are set to 0 and 100
+        // If these numbers are ever reached.
+        if (currentNitro <= 0)
+        {
+            currentNitro = 0;
+        }
+
+        if (currentNitro > 100)
+        {
+            currentNitro = 100;
+        }
     }
 
     void HandBrakeCar()
@@ -118,7 +215,6 @@ public class CarController : MonoBehaviour {
         }
     }
 
-
     void CarBraking()
     {
         float carReverseMovement = Input.GetAxis("Vertical");
@@ -154,7 +250,7 @@ public class CarController : MonoBehaviour {
         }
     }
 
-
+    
     void UpdateWheelMotions()
     {
         // This method updates all the wheel colliders and the wheel mesh in real time as they ride together.
