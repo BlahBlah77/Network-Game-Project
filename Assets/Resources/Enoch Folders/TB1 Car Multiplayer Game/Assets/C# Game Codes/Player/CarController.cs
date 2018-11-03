@@ -57,7 +57,7 @@ public class CarController : MonoBehaviour {
         CarBraking();
         UpdateNitroValue();
         UpdateWheelMotions();
-        Debug.Log(currentNitro);
+        //Debug.Log(currentNitro);
     }
 
     void SetInput()
@@ -101,8 +101,10 @@ public class CarController : MonoBehaviour {
         // give the player +10 nitro
         if (collision.gameObject.name == "Cube")
         {
-            UpdateNitroRate(0, 10);
+            UpdateNitroRate(0, 2);
         }
+
+
     }
 
     void NewNitroSystem()
@@ -138,8 +140,9 @@ public class CarController : MonoBehaviour {
         }
     }
 
-    void UpdateNitroRate(int downRate, int upRate)
+    public void UpdateNitroRate(int downRate, int upRate)
     {
+        // Base function
         // this function allows the ability to
         // either..
         // decrease the nitro value when pressed
@@ -149,11 +152,11 @@ public class CarController : MonoBehaviour {
         currentNitro += upRate;
     }
 
-    void IncreaseNitroValue()
-    {
-        UpdateNitroRate(0, 1);
-        Debug.Log("Refilling Nitro Value");
-    }
+    //public void IncreaseNitroValue()
+    //{
+    //    UpdateNitroRate(0, 5);
+    //    Debug.Log("Refilling Nitro Value");
+    //}
 
     void UpdateNitroValue()
     {
@@ -162,7 +165,7 @@ public class CarController : MonoBehaviour {
 
         if (Input.GetKey(KeyCode.E))
         {
-            UpdateNitroRate(20, 0);
+            UpdateNitroRate(5, 0);
             Debug.Log("Decreased Nitro Value");
         }
 
