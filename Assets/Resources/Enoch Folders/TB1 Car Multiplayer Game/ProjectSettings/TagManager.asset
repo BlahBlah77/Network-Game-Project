@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Nitrous
   - Damage
+  - player
   layers:
   - Default
   - TransparentFX

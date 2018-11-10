@@ -5,24 +5,23 @@ using UnityEngine.UI;
 
 public class EnemyDamageMeter : MonoBehaviour {
 
-    CarController carController;
-    DamageMeterText playerDamage;
+    public GameObject playerCar;
+    public GameObject enemyCar;
+
     public Text enemyCarHealth;
     public GameObject mainPlayer;
-    public float currentCarHealth;
-    public float maxCarHealth = 100;
+    public float currentEnemyCarHealth;
+    public float maxEnemyCarHealth = 100;
 
     // Use this for initialization
-    void Start ()
+    void Start()
     {
-        currentCarHealth = maxCarHealth; // set the current health to max health
-        carController = mainPlayer.GetComponent<CarController>();
-        playerDamage = mainPlayer.GetComponent<DamageMeterText>();
+        currentEnemyCarHealth = maxEnemyCarHealth; // set the current health to max health
     }
-	
-	// Update is called once per frame
-	void FixedUpdate () {
 
+    // Update is called once per frame
+    void FixedUpdate()
+    {
         ShowCarHealth();
         CarWreaked();
     }
@@ -30,32 +29,17 @@ public class EnemyDamageMeter : MonoBehaviour {
     void ShowCarHealth()
     {
         // show the car health
-        enemyCarHealth.text = "Car Health: " + (int)currentCarHealth + "%";
+        enemyCarHealth.text = "Enemy Car Health: " + (int)currentEnemyCarHealth + "%";
     }
 
     void CarWreaked()
     {
-        if (currentCarHealth <= 0)
+        if (currentEnemyCarHealth <= 0)
         {
-            currentCarHealth = 0;
+            currentEnemyCarHealth = 0;
             Debug.Log("You are wreaked");
             //can write more logic here to respawn 
             //back to lobby or start again...
-        }
-    }
-
-    void TakeDamage(float rate)
-    {
-        currentCarHealth -= rate;
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject == mainPlayer)
-        {
-            TakeDamage(10);
-            carController.UpdateNitroRate(0, 1);
-            Debug.Log("player has collided with me");
         }
     }
 }

@@ -16,6 +16,7 @@ public class CarController : MonoBehaviour {
     public float motorTorquePower;
     public float brakeTorquePower;
     public float brakingPower = 50f;
+    
 
     // Braking bools
     private bool isHandBraking;
@@ -26,6 +27,7 @@ public class CarController : MonoBehaviour {
     public float maxNitroSpeed; // maximum speed the car go in nitrous mode
     float newTorquePower = 1000;
     float oldTorquePower = 500;
+    public float changeInNitro = 5;
 
     //Updating Nitrous Values 
     public float currentNitro; // will be the max nitro
@@ -34,7 +36,7 @@ public class CarController : MonoBehaviour {
     // Car Mathematics (Vectors, Quarternion, Rigidbody, Transforms and WheelCollider)
     private Vector3 wheelPos;
     private Quaternion wheelRot;
-    private Rigidbody rb;
+    public Rigidbody rb;
     public Transform transformWheelFrontLeft, transformWheelFrontRight;
     public Transform transformWheelRearLeft, transformWheelRearRight;
     public WheelCollider wheelFrontLeft, wheelFrontRight;
@@ -57,7 +59,6 @@ public class CarController : MonoBehaviour {
         CarBraking();
         UpdateNitroValue();
         UpdateWheelMotions();
-        //Debug.Log(currentNitro);
     }
 
     void SetInput()
@@ -140,7 +141,7 @@ public class CarController : MonoBehaviour {
         }
     }
 
-    public void UpdateNitroRate(int downRate, int upRate)
+    public void UpdateNitroRate(float downRate, float upRate)
     {
         // Base function
         // this function allows the ability to
@@ -152,20 +153,16 @@ public class CarController : MonoBehaviour {
         currentNitro += upRate;
     }
 
-    //public void IncreaseNitroValue()
-    //{
-    //    UpdateNitroRate(0, 5);
-    //    Debug.Log("Refilling Nitro Value");
-    //}
-
     void UpdateNitroValue()
     {
         // This function updates the nitro value based on whether the E key is pressed or not
         // If the key is pressed, decrease the nitro value
 
+        
+
         if (Input.GetKey(KeyCode.E))
         {
-            UpdateNitroRate(5, 0);
+            UpdateNitroRate(changeInNitro, 0);
             Debug.Log("Decreased Nitro Value");
         }
 
@@ -182,6 +179,7 @@ public class CarController : MonoBehaviour {
             currentNitro = 100;
         }
     }
+
 
     void HandBrakeCar()
     {
