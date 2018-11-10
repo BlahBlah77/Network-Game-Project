@@ -11,20 +11,21 @@ public class DamageMeterText : MonoBehaviour {
     public GameObject playerCar;
     public GameObject enemyCar;
     public Text carHealthText;
-    Rigidbody rb; 
+    private Rigidbody rb;
 
-    float collisionTime; // time.deltatime variable helper
-    float minCollisionSpeed = 1; // the variable that helps define if the current speed of the car is greater than 1mph
-    float maxCarHealth = 100; // the maximum amount of health the car can have
+    public float maxCarHealth = 100; // the maximum amount of health the car can have
     public float currentCarHealth; // current car health thats in game
     public float collisionSpeed; // a variable to swap with the current speed
     public float currentSpeed; // the current speed of the car 
     public float changeInSpeed; // the speed that the car changes by
-    public float damageRate;
+    public float damageRate; // multiplier that alters how much damage the car can do to another car
+    public float changeInDamage; //TEST FOR THE SHIELD POWER UP... MODIFIED LATER ON WITH COLLISIONS....
+    float collisionTime; // time.deltatime variable helper
+    float minCollisionSpeed = 1; // the variable that helps define if the current speed of the car is greater than 1mph
 
 
     bool isDamaging = false; // are we damaging the enemy car?
-    
+
 
     // Use this for initialization
     void Start()
@@ -40,7 +41,7 @@ public class DamageMeterText : MonoBehaviour {
     {
         ShowCarHealth();
         DamageSystem();
-        CarWreaked();
+        PressKeyToDamage();
     }
 
     void ShowCarHealth()
@@ -74,13 +75,17 @@ public class DamageMeterText : MonoBehaviour {
         }
     }
 
-
-    void CarWreaked()
+    void TestCarDamage(float damageRate)
     {
-        if (currentCarHealth <= 0)
+        currentCarHealth -= damageRate * Time.deltaTime;
+
+    }
+
+    void PressKeyToDamage()
+    {
+        if(Input.GetKey(KeyCode.R))
         {
-            currentCarHealth = 0;
-            Debug.Log("You are wreaked");
+            TestCarDamage(changeInDamage);
         }
     }
 

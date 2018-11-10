@@ -2,31 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PowerRam : MonoBehaviour {
+public class Invincibility : MonoBehaviour {
 
     public GameObject player;
-    GameObject particleRamEffect;
+    GameObject particleShieldEffect;
     DamageMeterText playerDamage;
     float timer = 30;
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag ("player"))
+        if (other.CompareTag("player"))
         {
-            StartCoroutine(RamPickup(other));
+            playerDamage = player.GetComponent<DamageMeterText>();
+            playerDamage.currentCarHealth = playerDamage.maxCarHealth;
+            StartCoroutine(ShieldPickup(other));
         }
     }
 
-    IEnumerator RamPickup(Collider Player)
+    IEnumerator ShieldPickup(Collider Player)
     {
         // Instantiate some particle effects here...
-        //Instantiate(particleRamEffect, transform.position, transform.rotation);
+        //Instantiate(particleShieldEffect, transform.position, transform.rotation);
         playerDamage = player.GetComponent<DamageMeterText>();
-        playerDamage.damageRate = 10;
+        playerDamage.changeInDamage = 0;
         GetComponent<MeshRenderer>().enabled = false;
         GetComponent<Collider>().enabled = false;
         yield return new WaitForSeconds(timer);
-        playerDamage.damageRate = 1;
+        playerDamage.changeInDamage = 5;
         Destroy(gameObject);
     }
 }

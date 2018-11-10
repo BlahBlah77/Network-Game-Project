@@ -27,11 +27,11 @@ public class CarController : MonoBehaviour {
     public float maxNitroSpeed; // maximum speed the car go in nitrous mode
     float newTorquePower = 1000;
     float oldTorquePower = 500;
-    public float changeInNitro = 5;
+    public float changeInNitro = 5; // for the infinitro powerup
 
     //Updating Nitrous Values 
     public float currentNitro; // will be the max nitro
-    float maxNitro = 100;// how much nitrous do we have.
+    public float maxNitro = 100;// how much nitrous do we have.
 
     // Car Mathematics (Vectors, Quarternion, Rigidbody, Transforms and WheelCollider)
     private Vector3 wheelPos;
@@ -95,19 +95,6 @@ public class CarController : MonoBehaviour {
         wheelRearRight.motorTorque = motorTorquePower * verticalMovement;
     }
 
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        // if you collide with another car
-        // give the player +10 nitro
-        if (collision.gameObject.name == "Cube")
-        {
-            UpdateNitroRate(0, 2);
-        }
-
-
-    }
-
     void NewNitroSystem()
     {
         // pass the max speed assigned and set it in another variable.
@@ -123,13 +110,13 @@ public class CarController : MonoBehaviour {
             isNitrousOn = true;
             motorTorquePower = newTorquePower;
             setMaxSpeed = maxNitroSpeed;
-            Debug.Log("Nitro activated");
+            //Debug.Log("Nitro activated");
         }
         else if(Input.GetKeyUp(KeyCode.E) && isNitrousOn)
         { 
             isNitrousOn = false;
             motorTorquePower = oldTorquePower;
-            Debug.Log("nitrous deactivated");
+            //Debug.Log("nitrous deactivated");
         }
 
         // if the nitro value is equal to zero OR is equal to 5
@@ -158,12 +145,10 @@ public class CarController : MonoBehaviour {
         // This function updates the nitro value based on whether the E key is pressed or not
         // If the key is pressed, decrease the nitro value
 
-        
-
         if (Input.GetKey(KeyCode.E))
         {
             UpdateNitroRate(changeInNitro, 0);
-            Debug.Log("Decreased Nitro Value");
+            //Debug.Log("Decreased Nitro Value");
         }
 
         // Safety Checks
@@ -185,7 +170,7 @@ public class CarController : MonoBehaviour {
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            Debug.Log("BRAKING!!");
+            //Debug.Log("BRAKING!!");
             isHandBraking = true;
         }
         else
