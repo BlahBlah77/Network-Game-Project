@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerCar : MonoBehaviour, IDamageable
+public class PlayerCar : Photon.MonoBehaviour, IDamageable
 {
     [Header("Car Mathematics")]
     public Rigidbody rb;
@@ -59,7 +59,8 @@ public class PlayerCar : MonoBehaviour, IDamageable
     public float currentLives;
     public float maxLives = 3;
 
-    [Header("Player Health")]
+    [Header ("Player Health Bar")]
+    public Image Healthbar;
     public float maxCarHealth = 100; // the maximum amount of health the car can have
     public float currentCarHealth; // current car health thats in game
 
@@ -87,6 +88,10 @@ public class PlayerCar : MonoBehaviour, IDamageable
 
     void Start()
     {
+        if (!photonView.isMine)
+        {
+            //return;
+        }
         rb = GetComponent<Rigidbody>(); // get the rigidbody thats attached to the car..
         currentNitro = maxNitro; // current nitro is now equal to the max nitro (100 at the start)
         currentCarHealth = maxCarHealth;
@@ -97,11 +102,16 @@ public class PlayerCar : MonoBehaviour, IDamageable
     // Update is called once per frame
     void Update()
     {
-        CarMechanics();
-        ShowAllPlayerUI();
-        //ShowEnemyCarHealth(); // TESTINGGGG
-        CarWreaked(); // TESTTTINNGGG
-        PressKeyToDamage();
+        //if (photonView.isMine)
+        {
+            CarMechanics();
+            ShowAllPlayerUI();
+            //ShowEnemyCarHealth(); // TESTINGGGG
+            CarWreaked(); // TESTTTINNGGG
+            PressKeyToDamage();
+            //return;
+        }
+
     }
     
     
@@ -398,7 +408,7 @@ public class PlayerCar : MonoBehaviour, IDamageable
     }
     void ShowHealth()
     {
-        carHealthText.text = "Player Car Health: " + (int)currentCarHealth + "%";
+        Healthbar.fillAmount = currentCarHealth / maxCarHealth;
     }
     #endregion 
 
@@ -428,22 +438,9 @@ public class PlayerCar : MonoBehaviour, IDamageable
         Debug.Log("Hit the car");
     }
 
-    public void TriggerPowerup(string powerUp)
-    {
-        switch(powerUp)
-        {
-            case "Speed":
-                //Call power up coroutine accordingly
-                break;
-            case "Damage":
-                break;
-        }
-    }
-
     void TestCarDamage(float damageRate)
     {
         currentCarHealth -= damageRate * Time.deltaTime;
-
     }
 
     // TESTING FUNCTION FOR SIMULATING PLAYER DAMAGE!!
@@ -454,12 +451,4 @@ public class PlayerCar : MonoBehaviour, IDamageable
             TestCarDamage(changeInDamage);
         }
     }
-    //We want a function which ends any running coroutines for when we die
-    //IEnumnerator SpeedBoost
-    //Set speed to X
-    //carController.changeInNitro = 0;
-    //Wait X seconds
-    //yield return new WaitForSeconds(timer);
-    //Reset speed
-    //arController.changeInNitro = 5;
 }

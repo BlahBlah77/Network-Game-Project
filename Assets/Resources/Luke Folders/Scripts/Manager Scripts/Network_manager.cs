@@ -82,7 +82,7 @@ public class Network_manager : MonoBehaviour {
 
 	public void StartRoom()
 	{
-		SceneManager.LoadScene ("lvl_Test1");
+		SceneManager.LoadScene ("Arena");
 		PhotonNetwork.CreateRoom (RoomName, new RoomOptions ()
 		{ 
 			MaxPlayers = 4, 
