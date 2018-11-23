@@ -8,10 +8,4 @@ public interface IDamageable
     float GetDamage { get; set; }
 }
 
-public interface IPowerUpUse
-{
-    void TriggerPowerup(string powerUp);
-
-    //Powerup logic just call this interface, then destroy or hideselves
-}
 

@@ -60,7 +60,7 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     public float maxLives = 3;
 
     [Header ("Player Health Bar")]
-    public Image Healthbar;
+    public Image healthbar;
     public float maxCarHealth = 100; // the maximum amount of health the car can have
     public float currentCarHealth; // current car health thats in game
 
@@ -75,15 +75,31 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     public float damageRate; // multiplier that alters how much damage the car can do to another car
     public float changeInDamage; //TEST FOR THE SHIELD POWER UP... MODIFIED LATER ON WITH COLLISIONS....
     float collisionTime; // time.deltatime variable helper
-    float minCollisionSpeed = 1; // the variable that helps define if the current speed of the car is greater than 1mph
+    public float minCollisionSpeed = 1; // the variable that helps define if the current speed of the car is greater than 1mph
 
     // Player UI
     [Header("Player UI")]
     public Text speedText;
     public Text nitroText;
     public Text carLivesText;
-    public Text carHealthText;
-   // public Text enemyCarHealth; // TESTING ONLY FOR COLLISIONS WITH INTERFACE
+    public Text score;
+    public Text rankingText;
+    public Text timerText;
+
+    [Header("Timer")]
+    private float startTime;
+    private bool finished = false;
+    private bool timerPause = true;
+
+
+    [Header("Score")]
+    public static int scoreValue = 10;
+    public static int maxScore = 70;
+    private float randomScore;
+    private bool isMaxScoreReached = false;
+
+
+    // public Text enemyCarHealth; // TESTING ONLY FOR COLLISIONS WITH INTERFACE
 
 
     void Start()
@@ -93,10 +109,18 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
             //return;
         }
         rb = GetComponent<Rigidbody>(); // get the rigidbody thats attached to the car..
+        StartCoroutine(HoldTimer(5)); // wait 5 seconds before starting the timer
         currentNitro = maxNitro; // current nitro is now equal to the max nitro (100 at the start)
         currentCarHealth = maxCarHealth;
         currentLives = maxLives; // current player lives is 3
         currentEnemyCarHealth = maxEnemyCarHealth; // set the current health to max health
+    }
+
+        IEnumerator HoldTimer(float time)
+    {
+        yield return new WaitForSeconds(5);
+        startTime = Time.time;
+        timerPause = false;
     }
 
     // Update is called once per frame
@@ -109,12 +133,10 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
             //ShowEnemyCarHealth(); // TESTINGGGG
             CarWreaked(); // TESTTTINNGGG
             PressKeyToDamage();
-            //return;
         }
 
     }
-    
-    
+
     #region ("Car Movement Mechanics")
     private void CarMechanics()
     {
@@ -329,24 +351,54 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         GameObject hitObject = collision.gameObject;
         IDamageable damgeObject = hitObject.GetComponent<IDamageable>();
 
-        //Reference to attached Damageable interface (if there is one)
-        //If the car that we are hitting has the IDamageable interface attached they will take damage.
-        if (hitObject.GetComponent<IDamageable>() != null)
+        // If it is network then the photon view will work
+        // If it is not networked it will still run the code..
+        if (!photonView.isMine || PhotonNetwork.connected == false)
         {
-            collisionSpeed = GetCurrentSpeed(); // get the speed of the car
-
-            if (Time.time > collisionTime)
+            //Reference to attached Damageable interface (if there is one)
+            //If the car that we are hitting has the IDamageable interface attached they will take damage.
+            if (hitObject.GetComponent<IDamageable>() != null)
             {
-                if (collisionSpeed > minCollisionSpeed)
+                collisionSpeed = GetCurrentSpeed(); // get the speed of the car
+
+                if (Time.time > collisionTime)
                 {
-                    nitroRandNumber = Random.Range(5.0f, 10.0f);
-                    Debug.Log(collisionSpeed * damageRate);
-                    damgeObject.Damage(collisionSpeed * damageRate);
-                    UpdateNitroRate(0, nitroRandNumber); //Nitro logic here**************
+                    if (collisionSpeed > minCollisionSpeed)
+                    {
+                        nitroRandNumber = Random.Range(5.0f, 10.0f);
+                        Debug.Log(collisionSpeed * damageRate);
+                        damgeObject.Damage(collisionSpeed * damageRate);
+                        UpdateNitroRate(0, nitroRandNumber); //Update Nitro 
+                        AddScore(10);
+                    }
                 }
             }
         }
+
+        // When its networked
+        //if (photonView.isMine) //|| PhotonNetwork.connected == false)
+        //{
+        //    //Reference to attached Damageable interface (if there is one)
+        //    //If the car that we are hitting has the IDamageable interface attached they will take damage.
+        //    if (hitObject.GetComponent<IDamageable>() != null)
+        //    {
+        //        collisionSpeed = GetCurrentSpeed(); // get the speed of the car
+
+        //        if (Time.time > collisionTime)
+        //        {
+        //            if (collisionSpeed > minCollisionSpeed)
+        //            {
+        //                nitroRandNumber = Random.Range(5.0f, 10.0f);
+        //                Debug.Log(collisionSpeed * damageRate);
+        //                damgeObject.Damage(collisionSpeed * damageRate);
+        //                UpdateNitroRate(0, nitroRandNumber); //Update Nitro 
+        //                AddScore(10);
+        //            }
+        //        }
+        //    }
+        //}
     }
+
     void OnCollisionEnter(Collision collision)
     {
         CarCollision(collision);
@@ -362,7 +414,12 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         ShowLivesUI();
         RemoveLives();
         ShowHealth();
+        ShowScore();
+        ShowRankingScore();
+        StartTimer();
     }
+
+    #region ("Car Movement Mechanics")
     void ShowSpeedUI()
     {
         speedText.text = "Speed: " + (int)actualSpeed + " mph";
@@ -408,14 +465,81 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     }
     void ShowHealth()
     {
-        Healthbar.fillAmount = currentCarHealth / maxCarHealth;
+        healthbar.fillAmount = currentCarHealth / maxCarHealth;
     }
-    #endregion 
+    void ShowScore()
+    {
+        score.text = "Score: " + scoreValue;
+    }
+    void ShowRankingScore()
+    {
+        rankingText.text = "Ranking: ";
+
+        if (scoreValue >= 10 && scoreValue <= 19)
+        {
+            rankingText.text = "Ranking: Bronze";
+        }
+
+        if (scoreValue >= 20 && scoreValue <= 29)
+        {
+            rankingText.text = "Ranking: Silver";
+        }
+
+        if (scoreValue >= 30 && scoreValue <= 39)
+        {
+            rankingText.text = "Ranking: Gold";
+        }
+
+        if (scoreValue >= 40 && scoreValue <= 49)
+        {
+            rankingText.text = "Ranking: Platinum";
+        }
+
+        if (scoreValue == maxScore)
+        {
+            isMaxScoreReached = true;
+        }
+    }
+    void StartTimer()
+    {
+        // Timer Function
+        if (!timerPause)
+        {
+            RunTimer();
+        }
+    }
+    #endregion
+
+    // Setters / Miscillaneous Functions
+    void AddScore(int amount)
+    {
+        float randomScore = Random.Range(4, 11);
+        scoreValue += amount;
+    }
+    void RunTimer()
+    {
+        // Stops Timer when score is equal to the MaxScore, Change if necessary 
+        if (finished)
+            return;
+
+        if (scoreValue == maxScore)
+        {
+            finished = true;
+        }
+
+        // Timer Code
+        float t = Time.time - startTime;
+        string minutes = ((int)t / 60).ToString();
+        string seconds = (t % 60).ToString("f2");
+        timerText.text = "Time: " + minutes + ":" + seconds;
+    }
+
+    #endregion
 
     #region ("Enemy UI")
     //void ShowEnemyCarHealth()
     //{
-        //enemyCarHealth.text = "Enemy Car Health: " + (int)currentEnemyCarHealth + "%";
+    //enemyCarHealth.text = "Enemy Car Health: " + (int)currentEnemyCarHealth + "%";
     //}
     void CarWreaked()
     {
@@ -434,7 +558,7 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     public void Damage(float damageAmount)
     {
         // take the enemy's car health down...
-        currentEnemyCarHealth -= damageAmount;
+        currentCarHealth -= damageAmount;
         Debug.Log("Hit the car");
     }
 

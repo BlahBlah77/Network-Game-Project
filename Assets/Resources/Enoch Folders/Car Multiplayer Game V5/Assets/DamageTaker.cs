@@ -7,7 +7,7 @@ public class DamageTaker : MonoBehaviour, IDamageable
 {
     float enemyHealth = 100;
 
-    public Text enemyCarHealth;
+    //public Text enemyCarHealth;
 
     public float GetDamage
     {
@@ -25,11 +25,12 @@ public class DamageTaker : MonoBehaviour, IDamageable
     public void Damage(float damageAmount)
     {
         enemyHealth -= damageAmount;
+        Debug.Log( gameObject.name + " have taken: " + damageAmount);
     }
 
     void Update()
     {
-        enemyCarHealth.text = "Enemy Car Health: " + (int)enemyHealth + "%";
+        //enemyCarHealth.text = "Enemy Car Health: " + (int)enemyHealth + "%";
 
         if (enemyHealth < 0)
         {
