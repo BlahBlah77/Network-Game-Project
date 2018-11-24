@@ -14,7 +14,6 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     private Vector3 wheelPos;
     private Quaternion wheelRot;
 
-
     [Header("Car Mechanics")]
     private float verticalMovement; // moving forward
     private float horizontalMovement; // steering wheels
@@ -23,19 +22,6 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     private float maxSpeed;
     public float setMaxSpeed;
     public float actualSpeed { get { return rb.velocity.magnitude * 2.23693629f; } }
-
-    public float GetDamage
-    {
-        get
-        {
-            throw new System.NotImplementedException();
-        }
-
-        set
-        {
-            throw new System.NotImplementedException();
-        }
-    }
 
     [Header("Torque")]
     public float motorTorquePower;
@@ -54,7 +40,6 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     private bool isBraking; // are we braking
     private bool isNitrousOn = false; //Nitrous system pressing E and out
   
-
     [Header("Player Lives")]
     public float currentLives;
     public float maxLives = 3;
@@ -63,10 +48,6 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     public Image healthbar;
     public float maxCarHealth = 100; // the maximum amount of health the car can have
     public float currentCarHealth; // current car health thats in game
-
-    [Header("Enemy Health")]
-    public float currentEnemyCarHealth;
-    public float maxEnemyCarHealth = 100;
 
     [Header("Player Damage System")]
     public float collisionSpeed; // a variable to swap with the current speed
@@ -91,50 +72,51 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     private bool finished = false;
     private bool timerPause = true;
 
-
     [Header("Score")]
-    public static int scoreValue = 10;
-    public static int maxScore = 70;
-    private float randomScore;
-    private bool isMaxScoreReached = false;
+    public static int scoreValue = 0;
+    public static int maxScore = 50;
+    private int randomScore;
 
-
-    // public Text enemyCarHealth; // TESTING ONLY FOR COLLISIONS WITH INTERFACE
 
 
     void Start()
     {
-        if (!photonView.isMine)
-        {
-            //return;
-        }
-        rb = GetComponent<Rigidbody>(); // get the rigidbody thats attached to the car..
-        StartCoroutine(HoldTimer(5)); // wait 5 seconds before starting the timer
-        currentNitro = maxNitro; // current nitro is now equal to the max nitro (100 at the start)
-        currentCarHealth = maxCarHealth;
-        currentLives = maxLives; // current player lives is 3
-        currentEnemyCarHealth = maxEnemyCarHealth; // set the current health to max health
+        OnPlayerStart();
     }
 
-        IEnumerator HoldTimer(float time)
-    {
-        yield return new WaitForSeconds(5);
-        startTime = Time.time;
-        timerPause = false;
-    }
-
-    // Update is called once per frame
     void Update()
     {
         //if (photonView.isMine)
         {
             CarMechanics();
             ShowAllPlayerUI();
-            //ShowEnemyCarHealth(); // TESTINGGGG
             CarWreaked(); // TESTTTINNGGG
             PressKeyToDamage();
         }
 
+    }
+
+    IEnumerator HoldTimer(float time)
+    {
+        yield return new WaitForSeconds(5);
+        startTime = Time.time;
+        timerPause = false;
+    }
+
+    void OnPlayerStart()
+    {
+        // Initialize everything the player needs to be ready to start the game
+
+        if (!photonView.isMine)
+        {
+            //return;
+        }
+
+        rb = GetComponent<Rigidbody>(); // get the rigidbody thats attached to the car..
+        StartCoroutine(HoldTimer(5)); // wait 5 seconds before starting the timer
+        currentNitro = maxNitro; // current nitro is now equal to the max nitro (100 at the start)
+        currentCarHealth = maxCarHealth;
+        currentLives = maxLives; // current player lives is 3
     }
 
     #region ("Car Movement Mechanics")
@@ -366,10 +348,11 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
                     if (collisionSpeed > minCollisionSpeed)
                     {
                         nitroRandNumber = Random.Range(5.0f, 10.0f);
+                        randomScore = Random.Range(1, 11);
+                        damgeObject.Damage(collisionSpeed * damageRate); // apply damage to other car
+                        UpdateNitroRate(0, nitroRandNumber); // replenish player nitro if used 
+                        AddScore(randomScore); // add score 
                         Debug.Log(collisionSpeed * damageRate);
-                        damgeObject.Damage(collisionSpeed * damageRate);
-                        UpdateNitroRate(0, nitroRandNumber); //Update Nitro 
-                        AddScore(10);
                     }
                 }
             }
@@ -419,7 +402,7 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         StartTimer();
     }
 
-    #region ("Car Movement Mechanics")
+    #region ("All Callable Player UI Functions")
     void ShowSpeedUI()
     {
         speedText.text = "Speed: " + (int)actualSpeed + " mph";
@@ -473,6 +456,7 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     }
     void ShowRankingScore()
     {
+        // Initial ranking of nothing until conditions are met.
         rankingText.text = "Ranking: ";
 
         if (scoreValue >= 10 && scoreValue <= 19)
@@ -495,10 +479,19 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
             rankingText.text = "Ranking: Platinum";
         }
 
-        if (scoreValue == maxScore)
+        if (scoreValue >= 50)
         {
-            isMaxScoreReached = true;
+            scoreValue = maxScore;
+            rankingText.text = "Max Score!";
         }
+    }
+    
+    #endregion
+
+    // Setters/Miscillaneous Functions
+    void AddScore(int amount)
+    {
+        scoreValue += amount;
     }
     void StartTimer()
     {
@@ -507,14 +500,6 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         {
             RunTimer();
         }
-    }
-    #endregion
-
-    // Setters / Miscillaneous Functions
-    void AddScore(int amount)
-    {
-        float randomScore = Random.Range(4, 11);
-        scoreValue += amount;
     }
     void RunTimer()
     {
@@ -533,22 +518,12 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         string seconds = (t % 60).ToString("f2");
         timerText.text = "Time: " + minutes + ":" + seconds;
     }
-
-    #endregion
-
-    #region ("Enemy UI")
-    //void ShowEnemyCarHealth()
-    //{
-    //enemyCarHealth.text = "Enemy Car Health: " + (int)currentEnemyCarHealth + "%";
-    //}
     void CarWreaked()
     {
-        if (currentEnemyCarHealth <= 0)
+        if (currentCarHealth <= 0)
         {
-            currentEnemyCarHealth = 0;
+            currentCarHealth = 0;
             Debug.Log("You are wreaked");
-            //can write more logic here to respawn 
-            //back to lobby or start again...
         }
     }
     #endregion
@@ -561,6 +536,20 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         currentCarHealth -= damageAmount;
         Debug.Log("Hit the car");
     }
+
+    public float GetDamage
+    {
+        get
+        {
+            throw new System.NotImplementedException();
+        }
+
+        set
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+
 
     void TestCarDamage(float damageRate)
     {

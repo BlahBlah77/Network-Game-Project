@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1211,6 +1211,20 @@ Prefab:
       propertyPath: m_Drag
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 224027103290762526, guid: 0a02f902f0f87b546a381e7aa0913c44,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: -108.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 224272768757956182, guid: 0a02f902f0f87b546a381e7aa0913c44,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: -108.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1268463585848414, guid: 0a02f902f0f87b546a381e7aa0913c44, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114034929439068348, guid: 0a02f902f0f87b546a381e7aa0913c44, type: 2}
   m_SourcePrefab: {fileID: 100100000, guid: 0a02f902f0f87b546a381e7aa0913c44, type: 2}
@@ -2036,10 +2050,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6d59bb8a3640b54a8bd781911576ee1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timerText: {fileID: 0}
-  startTime: 0
-  finished: 0
-  timerpause: 1
 --- !u!114 &961223011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2051,8 +2061,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 862afc6cd5379c14ab6dd88abfba6530, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PositionText: {fileID: 0}
-  MaxScoreReached: 0
 --- !u!1 &1007760011
 GameObject:
   m_ObjectHideFlags: 0
@@ -3538,6 +3546,16 @@ Prefab:
         type: 2}
       propertyPath: minCollisionSpeed
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224272768757956182, guid: 0a02f902f0f87b546a381e7aa0913c44,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: -108.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 224027103290762526, guid: 0a02f902f0f87b546a381e7aa0913c44,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: -108.5
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114034929439068348, guid: 0a02f902f0f87b546a381e7aa0913c44, type: 2}

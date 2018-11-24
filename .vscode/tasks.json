@@ -1,0 +1,26 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "command": "MSBuild.exe",
+    "args": [
+        // $msCompile requires GenerateFullPaths=true, rest is optional. I set it to build Debug/Any CPU and use parallel project build
+        "${workspaceRoot}/src/ExampleSolution.sln",
+        "/p:Configuration=Debug;Platform=Any CPU;GenerateFullPaths=true",
+        "/m"
+    ],
+    "taskSelector": "/t:",
+    "showOutput": "silent",
+    "echoCommand": true,
+    "tasks": [
+        {
+            "taskName": "Rebuild",
+            // Required if you want "Rebuild", not build as your target and still use ctrl + shift + b hotkey
+            "isBuildCommand": true,
+            // Show the output window only if unrecognized errors occur.
+            "showOutput": "silent",
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
