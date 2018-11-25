@@ -51,7 +51,8 @@ public class Network_Lobby : MonoBehaviour {
 
 	public void JoinRoom(string room)
 	{
-		PhotonNetwork.JoinRoom (room);
-		SceneManager.LoadScene ("lvl_Test1");
+        //PhotonNetwork.JoinRoom (room);
+        //PhotonNetwork.LoadLevel ("lvl_Test1");
+        nt.JoinRoom(room);
 	}
 }

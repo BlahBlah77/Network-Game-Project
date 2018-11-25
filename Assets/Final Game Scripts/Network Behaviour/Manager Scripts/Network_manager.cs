@@ -11,6 +11,7 @@ public class Network_manager : MonoBehaviour {
 	private TypedLobby LobbyName = new TypedLobby("New Lobby", LobbyType.Default);
 	public RoomInfo[] RoomList;
 	public GameObject Player;
+    int playerNo;
 
 	public static Network_manager Instnce
 	{
@@ -82,28 +83,33 @@ public class Network_manager : MonoBehaviour {
 
 	public void StartRoom()
 	{
-		SceneManager.LoadScene ("Arena");
-		PhotonNetwork.CreateRoom (RoomName, new RoomOptions ()
+        //SceneManager.LoadScene ("Arena");
+        PhotonNetwork.LoadLevel("Arena");
+
+        PhotonNetwork.CreateRoom (RoomName, new RoomOptions ()
 		{ 
 			MaxPlayers = 4, 
 			IsOpen = true, 
 			IsVisible = true 
 		}, 
 		LobbyName);
-	}
+    }
 
-	public void JoinRoom()
+	public void JoinRoom(string room)
 	{
-		if (RoomList != null)
-		{
-			for (int i = 0; i < RoomList.Length; i++) 
-			{
-				PhotonNetwork.JoinRoom (RoomList [i].Name);
-			}
-		}
-	}
+        PhotonNetwork.LoadLevel("Arena");
+        //if (RoomList != null)
+        //{
+        //	for (int i = 0; i < RoomList.Length; i++) 
+        //	{
+        //		PhotonNetwork.JoinRoom (RoomList [i].Name);
+        //	}
+        //}
+        PhotonNetwork.JoinRoom (room);
+        //PhotonNetwork.LoadLevel ("lvl_Test1");
+    }
 
-	void OnConnectedToMaster()
+    void OnConnectedToMaster()
 	{
 		Debug.Log ("OnMaster");
 		PhotonNetwork.JoinLobby (LobbyName);
@@ -122,7 +128,55 @@ public class Network_manager : MonoBehaviour {
 
 	void OnJoinedRoom()
 	{
-		Debug.Log ("Connected to Room");
-		PhotonNetwork.Instantiate (Player.name, Vector3.up * 5, Quaternion.identity, 0);
-	}
+        Spawn_Manager sp = GameObject.Find("Spawn Manager").GetComponent<Spawn_Manager>();
+        CheckNumber();
+
+        Debug.Log ("Connected to Room");
+        if (playerNo == 1)
+        {
+            PhotonNetwork.Instantiate(Player.name, sp.spawnList[0].position, sp.spawnList[0].rotation, 0);
+            playerNo = 2;
+        }
+        else if (playerNo == 2)
+        {
+            PhotonNetwork.Instantiate(Player.name, sp.spawnList[1].position, sp.spawnList[1].rotation, 0);
+            playerNo = 3;
+        }
+        else if (playerNo == 3)
+        {
+            PhotonNetwork.Instantiate(Player.name, sp.spawnList[2].position, sp.spawnList[2].rotation, 0);
+            playerNo = 4;
+        }
+        else if (playerNo == 4)
+        {
+            PhotonNetwork.Instantiate(Player.name, sp.spawnList[3].position, sp.spawnList[3].rotation, 0);
+            playerNo = 1;
+        }
+    }
+
+    public void EndRoom()
+    {
+        //Returns to the lobby screen on level end
+        PhotonNetwork.LeaveRoom();
+
+    }
+
+    void OnLeftRoom()
+    {
+        PhotonNetwork.LoadLevel("lvl_Test_Lobby");
+    }
+
+    void CheckNumber()
+    {
+        //Sets the player number to the number of players in the room
+        //In event of more players than the game allows
+        playerNo = PhotonNetwork.room.PlayerCount;
+        for (int i = 0; i <= playerNo; i++)
+        {
+            if (playerNo > 4)
+            {
+                playerNo -= 4;
+            }
+        }
+    }
 }

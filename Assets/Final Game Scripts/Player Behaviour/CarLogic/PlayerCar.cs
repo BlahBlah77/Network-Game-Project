@@ -80,6 +80,10 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     public static int maxScore = 50;
     private int randomScore;
 
+    [Header("Cameras")]
+    public Camera mainCamera;
+    public Camera minimapCamera;
+
     void Start()
     {
         OnPlayerStart();
@@ -87,13 +91,14 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
 
     void Update()
     {
-        //if (photonView.isMine)
-        {
-            CarMechanics();
-            ShowAllPlayerUI();
-            CarWreaked(); // TESTTTINNGGG
-            PressKeyToDamage(); // TESTING
-        }
+        //if (!photonView.isMine)
+        //{
+        //    return;
+        //}
+        CarMechanics();
+        ShowAllPlayerUI();
+        CarWreaked(); // TESTTTINNGGG
+        PressKeyToDamage(); // TESTING
     }
 
     IEnumerator HoldTimer(float time)
@@ -107,10 +112,13 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     {
         // Initialize everything the player needs to be ready to start the game
 
-        if (!photonView.isMine)
-        {
-            //return;
-        }
+        //if (!photonView.isMine)
+        //{
+        //    // Disables unneeded cameras
+        //    mainCamera.gameObject.SetActive(false);
+        //    minimapCamera.gameObject.SetActive(false);
+        //    //return;
+        //}
 
         rb = GetComponent<Rigidbody>(); // get the rigidbody thats attached to the car..
         GetComponent<Rigidbody>().centerOfMass = new Vector3(0, -0.9f, 0.2f); // centre of mass to keep car stable

@@ -1436,6 +1436,8 @@ MonoBehaviour:
   score: {fileID: 114150824581593662}
   rankingText: {fileID: 114179660550837458}
   timerText: {fileID: 114814327341623058}
+  mainCamera: {fileID: 20142285786792102}
+  minimapCamera: {fileID: 20039235426119134}
 --- !u!114 &114679796106087044
 MonoBehaviour:
   m_ObjectHideFlags: 1
