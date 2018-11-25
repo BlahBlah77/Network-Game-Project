@@ -14,6 +14,8 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     private Vector3 wheelPos;
     private Quaternion wheelRot;
 
+    private Vector3 Offset_Centre_Mass = new Vector3(0, 0, 0);
+
     [Header("Car Mechanics")]
     private float verticalMovement; // moving forward
     private float horizontalMovement; // steering wheels
@@ -111,6 +113,7 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         }
 
         rb = GetComponent<Rigidbody>(); // get the rigidbody thats attached to the car..
+        GetComponent<Rigidbody>().centerOfMass = new Vector3(0, -0.9f, 0.2f); // centre of mass to keep car stable
         StartCoroutine(HoldTimer(5)); // wait 5 seconds before starting the timer
         currentNitro = maxNitro; // current nitro is now equal to the max nitro (100 at the start)
         currentCarHealth = maxCarHealth;
