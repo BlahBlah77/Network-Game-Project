@@ -69,6 +69,10 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     public Text score;
     public Text rankingText;
     public Text timerText;
+    public Text stateText;
+    public bool isDead = false;
+    public List<PlayerCar> players;
+    public Button returnButton;
 
     [Header("Timer")]
     private float startTime;
@@ -92,12 +96,14 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
             stream.SendNext(currentCarHealth);
             stream.SendNext(currentNitro);
             stream.SendNext(currentLives);
+            stream.SendNext(isDead);
         }
         else
         {
             currentCarHealth = (float)stream.ReceiveNext();
             currentNitro = (float)stream.ReceiveNext();
             currentLives = (float)stream.ReceiveNext();
+            isDead = (bool)stream.ReceiveNext();
         }
     }
 
@@ -118,6 +124,22 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         PressKeyToDamage(); // TESTING
     }
 
+    public void VicChecker()
+    {
+        var obj = GameObject.FindGameObjectsWithTag("Player");
+        for (int i = 0; i < obj.Length; i++)
+        {
+            players.Add(obj[i].GetComponent<PlayerCar>());
+        }
+        if (players.Count == 1)
+        {
+            Debug.Log("We came in?");
+            stateText.text = "Victory";
+            stateText.gameObject.SetActive(true);
+            returnButton.gameObject.SetActive(true);
+        }
+    }
+
     IEnumerator HoldTimer(float time)
     {
         yield return new WaitForSeconds(5);
@@ -135,6 +157,13 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         currentNitro = maxNitro; // current nitro is now equal to the max nitro (100 at the start)
         currentCarHealth = maxCarHealth;
         currentLives = maxLives; // current player lives is 3
+        //players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
+
+        var objs = GameObject.FindGameObjectsWithTag("Player");
+        foreach (var obj in objs)
+        {
+            obj.GetComponent<PlayerCar>().players.Add(this);
+        }
 
         if (!photonView.isMine)
         {
@@ -157,6 +186,7 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         CarBraking();
         UpdateNitroValue();
         UpdateWheelMotions();
+        //VicChecker();
     }
     void SetInput()
     {
@@ -468,11 +498,38 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
 
         if (currentCarHealth == 0)
         {
-            this.gameObject.SetActive(false);
+            isDead = true;
+            //this.gameObject.SetActive(false);
+            if (photonView.isMine)
+            {
+                stateText.text = "You Lose";
+                stateText.gameObject.SetActive(true);
+                PhotonNetwork.LeaveRoom();
+                Destroy(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+
+                //foreach (PlayerCar pl in players)
+                //{
+             
+                //    pl.VicChecker();
+                //}
+            }
+            //Disable();
+
             // Go back to lobby???
             Debug.Log("Player is out of the game");
         }
     }
+
+    //[PunRPC]
+    //void Disable()
+    //{
+    //    this.enabled = false;
+    //}
+
     void ShowHealth()
     {
         healthbar.fillAmount = currentCarHealth / maxCarHealth;
@@ -574,6 +631,26 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         {
             throw new System.NotImplementedException();
         }
+    }
+
+    void OnPhotonPlayerDisconnected(PhotonPlayer newPlay)
+    {
+        players = new List<PlayerCar>();
+        Debug.Log("Isn't this where");
+        //var obj = GameObject.FindGameObjectsWithTag("Player");
+        //for (int i = 0; i < obj.Length; i++)
+        //{
+        //    players.Add(obj[i].GetComponent<PlayerCar>());
+        //}
+
+        StartCoroutine(DisconnectTime());
+    }
+
+    IEnumerator DisconnectTime()
+    {
+        yield return new WaitForSeconds(1.5f);
+        VicChecker();
+
     }
 
     // TESTING FUNCTION FOR SIMULATING PLAYER DAMAGE!!

@@ -39,32 +39,6 @@ public class Network_manager : MonoBehaviour {
 		PhotonNetwork.ConnectUsingSettings ("v4.2");
 	}
 
-//	void OnGUI()
-//	{
-//		if (!PhotonNetwork.connected) 
-//		{
-//			GUILayout.Label (PhotonNetwork.connectionStateDetailed.ToString ());
-//		} 
-//		else if (PhotonNetwork.room == null) 
-//		{
-//			if (GUI.Button (new Rect (100, 100, 250, 100), "Start Server")) 
-//			{
-//				PhotonNetwork.CreateRoom (RoomName, new RoomOptions ()
-//					{ MaxPlayers = 4, IsOpen = true, IsVisible = true }, LobbyName);
-//			}
-//			if (RoomList != null) 
-//			{
-//				for (int i = 0; i < RoomList.Length; i++) 
-//				{
-//					if (GUI.Button (new Rect (100, 250 + (110 * i), 250, 100), "Join " + RoomList [i].Name)) 
-//					{
-//						PhotonNetwork.JoinRoom (RoomList [i].Name);
-//					}
-//				}
-//			}
-//		}
-//	}
-
 	void Update()
 	{
 //		if (PhotonNetwork.room == null) 
@@ -121,12 +95,17 @@ public class Network_manager : MonoBehaviour {
 		RoomList = PhotonNetwork.GetRoomList ();
 	}
 
-	void OnJoinedLobby()
+    void OnJoinedLobby()
 	{
 		Debug.Log ("Joined Lobby");
 	}
 
-	void OnJoinedRoom()
+    //void OnPhotonPlayerConnected(PhotonPlayer newPlay)
+    //{
+    //    Debug.Log(RoomName);
+    //}
+
+    void OnJoinedRoom()
 	{
         Spawn_Manager sp = GameObject.Find("Spawn Manager").GetComponent<Spawn_Manager>();
         CheckNumber();
@@ -134,22 +113,33 @@ public class Network_manager : MonoBehaviour {
         Debug.Log ("Connected to Room");
         if (playerNo == 1)
         {
-            PhotonNetwork.Instantiate(Player.name, sp.spawnList[0].position, sp.spawnList[0].rotation, 0);
+            var obj = PhotonNetwork.Instantiate(Player.name, sp.spawnList[0].position, sp.spawnList[0].rotation, 0);
+            //GameObject.Find("Game Controller").GetComponent<Game_Controller>().players.Add(obj);
+            //GameObject.Find("Game Controller").GetComponent<Game_Controller>().numbPlayers += 1;
+
             playerNo = 2;
         }
         else if (playerNo == 2)
         {
-            PhotonNetwork.Instantiate(Player.name, sp.spawnList[1].position, sp.spawnList[1].rotation, 0);
+            var obj = PhotonNetwork.Instantiate(Player.name, sp.spawnList[1].position, sp.spawnList[1].rotation, 0);
+            //GameObject.Find("Game Controller").GetComponent<Game_Controller>().players.Add(obj);
+           // GameObject.Find("Game Controller").GetComponent<Game_Controller>().numbPlayers += 1;
+
             playerNo = 3;
         }
         else if (playerNo == 3)
         {
-            PhotonNetwork.Instantiate(Player.name, sp.spawnList[2].position, sp.spawnList[2].rotation, 0);
+            var obj = PhotonNetwork.Instantiate(Player.name, sp.spawnList[2].position, sp.spawnList[2].rotation, 0);
+           // GameObject.Find("Game Controller").GetComponent<Game_Controller>().players.Add(obj);
+            //GameObject.Find("Game Controller").GetComponent<Game_Controller>().numbPlayers += 1;
+
             playerNo = 4;
         }
         else if (playerNo == 4)
         {
-            PhotonNetwork.Instantiate(Player.name, sp.spawnList[3].position, sp.spawnList[3].rotation, 0);
+            var obj = PhotonNetwork.Instantiate(Player.name, sp.spawnList[3].position, sp.spawnList[3].rotation, 0);
+           // GameObject.Find("Game Controller").GetComponent<Game_Controller>().players.Add(obj);
+            //GameObject.Find("Game Controller").GetComponent<Game_Controller>().numbPlayers += 1;
             playerNo = 1;
         }
     }
