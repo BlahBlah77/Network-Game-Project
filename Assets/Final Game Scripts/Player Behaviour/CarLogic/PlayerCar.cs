@@ -80,9 +80,26 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     public static int maxScore = 50;
     private int randomScore;
 
-    [Header("Cameras")]
+    [Header("Cameras/Canvas")]
     public Camera mainCamera;
     public Camera minimapCamera;
+    public Canvas mainCan;
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.isWriting)
+        {
+            stream.SendNext(currentCarHealth);
+            stream.SendNext(currentNitro);
+            stream.SendNext(currentLives);
+        }
+        else
+        {
+            currentCarHealth = (float)stream.ReceiveNext();
+            currentNitro = (float)stream.ReceiveNext();
+            currentLives = (float)stream.ReceiveNext();
+        }
+    }
 
     void Start()
     {
@@ -91,10 +108,10 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
 
     void Update()
     {
-        //if (!photonView.isMine)
-        //{
-        //    return;
-        //}
+        if (!photonView.isMine)
+        {
+            return;
+        }
         CarMechanics();
         ShowAllPlayerUI();
         CarWreaked(); // TESTTTINNGGG
@@ -112,20 +129,21 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     {
         // Initialize everything the player needs to be ready to start the game
 
-        //if (!photonView.isMine)
-        //{
-        //    // Disables unneeded cameras
-        //    mainCamera.gameObject.SetActive(false);
-        //    minimapCamera.gameObject.SetActive(false);
-        //    //return;
-        //}
-
         rb = GetComponent<Rigidbody>(); // get the rigidbody thats attached to the car..
         GetComponent<Rigidbody>().centerOfMass = new Vector3(0, -0.9f, 0.2f); // centre of mass to keep car stable
         StartCoroutine(HoldTimer(5)); // wait 5 seconds before starting the timer
         currentNitro = maxNitro; // current nitro is now equal to the max nitro (100 at the start)
         currentCarHealth = maxCarHealth;
         currentLives = maxLives; // current player lives is 3
+
+        if (!photonView.isMine)
+        {
+            // Disables unneeded cameras and Ui
+            mainCamera.gameObject.SetActive(false);
+            minimapCamera.gameObject.SetActive(false);
+            mainCan.gameObject.SetActive(false);
+            return;
+        }
     }
 
     #region ("Car Movement Mechanics")
@@ -367,27 +385,27 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         }
 
         // When its networked
-        //if (photonView.isMine) //|| PhotonNetwork.connected == false)
-        //{
-        //    //Reference to attached Damageable interface (if there is one)
-        //    //If the car that we are hitting has the IDamageable interface attached they will take damage.
-        //    if (hitObject.GetComponent<IDamageable>() != null)
-        //    {
-        //        collisionSpeed = GetCurrentSpeed(); // get the speed of the car
+        if (photonView.isMine) //|| PhotonNetwork.connected == false)
+        {
+            //Reference to attached Damageable interface (if there is one)
+            //If the car that we are hitting has the IDamageable interface attached they will take damage.
+            if (hitObject.GetComponent<IDamageable>() != null)
+            {
+                collisionSpeed = GetCurrentSpeed(); // get the speed of the car
 
-        //        if (Time.time > collisionTime)
-        //        {
-        //            if (collisionSpeed > minCollisionSpeed)
-        //            {
-        //                nitroRandNumber = Random.Range(5.0f, 10.0f);
-        //                Debug.Log(collisionSpeed * damageRate);
-        //                damgeObject.Damage(collisionSpeed * damageRate);
-        //                UpdateNitroRate(0, nitroRandNumber); //Update Nitro 
-        //                AddScore(10);
-        //            }
-        //        }
-        //    }
-        //}
+                if (Time.time > collisionTime)
+                {
+                    if (collisionSpeed > minCollisionSpeed)
+                    {
+                        nitroRandNumber = Random.Range(5.0f, 10.0f);
+                        Debug.Log(collisionSpeed * damageRate);
+                        damgeObject.Damage(collisionSpeed * damageRate);
+                        UpdateNitroRate(0, nitroRandNumber); //Update Nitro 
+                        AddScore(10);
+                    }
+                }
+            }
+        }
     }
 
     void OnCollisionEnter(Collision collision)
