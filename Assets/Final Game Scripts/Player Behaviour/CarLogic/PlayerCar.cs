@@ -60,7 +60,7 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     public float damageRate; // multiplier that alters how much damage the car can do to another car
     public float changeInDamage; //TEST FOR THE SHIELD POWER UP... MODIFIED LATER ON WITH COLLISIONS....
     float collisionTime; // time.deltatime variable helper
-    public float minCollisionSpeed = 1; // the variable that helps define if the current speed of the car is greater than 1mph
+    public float minCollisionSpeed = 150f; // the variable that helps define if the current speed of the car is greater than 1mph
 
     // Player UI
     [Header("Player UI")]
@@ -89,6 +89,9 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     public Camera minimapCamera;
     public Canvas mainCan;
 
+    bool canTakeDamage = true;
+    public float coolDownTime = 0.2f;
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.isWriting)
@@ -114,10 +117,11 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
 
     void Update()
     {
-        if (!photonView.isMine)
-        {
-            return;
-        }
+        //if (!photonView.isMine)
+        //{
+        //    return;
+        //}
+
         CarMechanics();
         ShowAllPlayerUI();
         CarWreaked(); // TESTTTINNGGG
@@ -165,14 +169,14 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
             obj.GetComponent<PlayerCar>().players.Add(this);
         }
 
-        if (!photonView.isMine)
-        {
-            // Disables unneeded cameras and Ui
-            mainCamera.gameObject.SetActive(false);
-            minimapCamera.gameObject.SetActive(false);
-            mainCan.gameObject.SetActive(false);
-            return;
-        }
+        //if (!photonView.isMine)
+        //{
+        //    // Disables unneeded cameras and Ui
+        //    mainCamera.gameObject.SetActive(false);
+        //    minimapCamera.gameObject.SetActive(false);
+        //    mainCan.gameObject.SetActive(false);
+        //    return;
+        //}
     }
 
     #region ("Car Movement Mechanics")
@@ -383,6 +387,14 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     {
         return rb.velocity.magnitude * 2.23693629f;
     }
+
+    IEnumerator ReactivateDamage()
+    {
+        yield return new WaitForSeconds(coolDownTime);
+
+        canTakeDamage = true;
+    }
+
     void CarCollision(Collision collision)
     {
         //Reference to hit object
@@ -406,6 +418,8 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
                         nitroRandNumber = Random.Range(5.0f, 10.0f);
                         randomScore = Random.Range(1, 11);
                         damgeObject.Damage(collisionSpeed * damageRate); // apply damage to other car
+                        canTakeDamage = false;
+                        StartCoroutine(ReactivateDamage());
                         UpdateNitroRate(0, nitroRandNumber); // replenish player nitro if used 
                         AddScore(randomScore); // add score 
                         Debug.Log(collisionSpeed * damageRate);
@@ -430,6 +444,8 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
                         nitroRandNumber = Random.Range(5.0f, 10.0f);
                         Debug.Log(collisionSpeed * damageRate);
                         damgeObject.Damage(collisionSpeed * damageRate);
+                        //canTakeDamage = false;
+                        //StartCoroutine(ReactivateDamage());
                         UpdateNitroRate(0, nitroRandNumber); //Update Nitro 
                         AddScore(10);
                     }
@@ -616,6 +632,12 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     public void Damage(float damageAmount)
     {
         // take the enemy's car health down...
+
+        if (canTakeDamage == false)
+        {
+            return;
+        }
+
         currentCarHealth -= damageAmount;
         Debug.Log("Hit the car");
     }
