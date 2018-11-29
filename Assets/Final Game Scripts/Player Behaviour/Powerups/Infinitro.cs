@@ -11,22 +11,35 @@ public class Infinitro : MonoBehaviour {
 
     void Start()
     {
+        // Find the players present in the arena that have the player tag
         players = GameObject.FindGameObjectsWithTag("Player");
     }
 
     void OnTriggerEnter(Collider other)
     {
-
+        // loop through all the players in the array
+        // if ONE or more of the players collides with the powerup
+        // Start the couroutine for the powerup logic
         foreach (GameObject player in players)
         {
             if (other.gameObject == player)
             {
+                GenerateEnergyExplosion();
                 carController = player.GetComponent<PlayerCar>();
                 carController.currentNitro = carController.maxNitro;
                 StartCoroutine(InfinitroPickup(other));
             }
         }
 
+    }
+
+    void GenerateEnergyExplosion()
+    {
+        GameObject particle = ParticlePooling.particlePool.GetNitroParticle();
+        if (particle == null) return;
+        particle.transform.position = transform.position;
+        particle.transform.rotation = transform.rotation;
+        particle.SetActive(true);
     }
 
     IEnumerator InfinitroPickup(Collider Player)

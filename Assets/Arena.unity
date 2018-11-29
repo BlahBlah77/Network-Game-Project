@@ -3758,15 +3758,12 @@ MonoBehaviour:
   expandPool: 1
   sparkParticle: {fileID: 1000011945391522, guid: 78b71003e8b357d4bbf89c8b5e5e4f0e,
     type: 2}
-  sparkParticles: []
-  nitroPowerupParticle: {fileID: 0}
-  nitroPowerupParticles: []
-  powerRamPowerupParticle: {fileID: 0}
-  powerRamPowerupParticles: []
-  shieldPowerupParticle: {fileID: 0}
-  shieldPowerupParticles: []
-  explosionParticle: {fileID: 0}
-  explosionParticles: []
+  nitroPowerupParticle: {fileID: 1329845292236604, guid: 9bba9cf244c53c5439505dfc96fdd11c,
+    type: 2}
+  powerRamPowerupParticle: {fileID: 1121192042590650, guid: e1b08032bec16ba4eb1ae23cbd572664,
+    type: 2}
+  shieldPowerupParticle: {fileID: 1025285306637258, guid: d8f0099df63275647a8bcf646df1ca00,
+    type: 2}
 --- !u!4 &722040401
 Transform:
   m_ObjectHideFlags: 0
@@ -4100,6 +4097,10 @@ Prefab:
         type: 2}
       propertyPath: damageRate
       value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121694442997672, guid: 0a02f902f0f87b546a381e7aa0913c44, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a02f902f0f87b546a381e7aa0913c44, type: 2}
@@ -6674,6 +6675,23 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb4bde335e6d1754f8cd33e1b30a65aa, type: 2}
   m_IsPrefabAsset: 0
+--- !u!1 &1225263725 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1121694442997672, guid: 0a02f902f0f87b546a381e7aa0913c44,
+    type: 2}
+  m_PrefabInternal: {fileID: 759978472}
+--- !u!65 &1225263730
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1225263725}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.07754856, y: 0.05720263, z: 0.123403974}
+  m_Center: {x: -0.003944616, y: -0.0064634318, z: -0.0039558546}
 --- !u!4 &1225413124 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000013493088832, guid: 156f975b5c133c846bd7dd4d6c726faf,

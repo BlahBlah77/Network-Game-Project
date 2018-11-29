@@ -396,26 +396,6 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         canTakeDamage = true;
     }
 
-    //void SparksOnCollision(Collider other)
-    //{
-    //    Destroy the collectable if the player has contact with it
-    //    initialise a game object and call the method from the object pooler class created to get the particle gameobject.
-    //    Check if the particle is null to ensure no errors, else return back.
-    //    When the particle is in contact with the player
-    //     We want to instantiate the particle from the position and the rotation of where it hit the player from
-    //     So whichever angle it hits the player thats where the particle will instantiate from
-
-    //    if (other.gameObject == this.gameObject)
-    //    {
-    //        Debug.Log("Sparks Hit The Car");
-    //        GameObject particle = ParticlePooling.particlePool.GetSparkParticle();
-    //        if (particle == null) return;
-    //        particle.transform.position = transform.position;
-    //        particle.transform.rotation = transform.rotation;
-    //        particle.SetActive(true);
-    //    }
-    //}
-
         void CarCollision(Collision collision)
     {
         //Reference to hit object
@@ -439,8 +419,12 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
                         nitroRandNumber = Random.Range(5.0f, 10.0f);
                         randomScore = Random.Range(1, 11);
                         damgeObject.Damage(collisionSpeed * damageRate); // apply damage to other car
+
+                        // --- WORKING OFFLINE FOR DAMAGE SYSTEM --- //
                         canTakeDamage = false;
                         StartCoroutine(ReactivateDamage());
+
+
                         UpdateNitroRate(0, nitroRandNumber); // replenish player nitro if used 
                         AddScore(randomScore); // add score 
                         GenerateSparks();
@@ -466,8 +450,11 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
                         nitroRandNumber = Random.Range(5.0f, 10.0f);
                         Debug.Log(collisionSpeed * damageRate);
                         damgeObject.Damage(collisionSpeed * damageRate);
+
+                        // --- ACTIVATE THIS CODE ONLINE FOR THE DAMAGE TO WORK --- //
                         //canTakeDamage = false;
                         //StartCoroutine(ReactivateDamage());
+
                         UpdateNitroRate(0, nitroRandNumber); //Update Nitro 
                         AddScore(10);
                     }
@@ -478,6 +465,12 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
 
     void GenerateSparks()
     {
+        //    initialise a game object and call the method from the object pooler class created to get the particle gameobject.
+        //    Check if the particle is null to ensure no errors, else return back.
+        //    When the particle is in contact with the player
+        //     We want to instantiate the particle from the position and the rotation of where it hit the player from
+        //     So whichever angle it hits the player thats where the particle will instantiate from
+
         // WORKING SPARK PARTICLE EFFECT
         Debug.Log("Sparks Hit The Car");
         GameObject particle = ParticlePooling.particlePool.GetSparkParticle();
@@ -485,11 +478,6 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         particle.transform.position = transform.position;
         particle.transform.rotation = transform.rotation;
         particle.SetActive(true);
-    }
-
-    void GenerateExplosions()
-    {
-
     }
 
     void OnCollisionEnter(Collision collision)

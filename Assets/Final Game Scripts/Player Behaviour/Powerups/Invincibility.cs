@@ -11,26 +11,34 @@ public class Invincibility : MonoBehaviour {
 
     void Start()
     {
+        // Find the players present in the arena that have the player tag
         players = GameObject.FindGameObjectsWithTag("Player");
     }
 
     void OnTriggerEnter(Collider other)
     {
-
-        //for (int i = 0; i < players.Length; i++)
-        //{
-        //    carController = players[i].GetComponent<PlayerCar>();
-        //}
-
+        // loop through all the players in the array
+        // if ONE or more of the players collides with the powerup
+        // Start the couroutine for the powerup logic
         foreach (GameObject player in players)
         {
             if (other.gameObject == player)
             {
+                GenerateWaterSplash();
                 carController = player.GetComponent<PlayerCar>();
                 carController.currentCarHealth = carController.maxCarHealth;
                 StartCoroutine(ShieldPickup(other));
             }
         }
+    }
+
+    void GenerateWaterSplash()
+    {
+        GameObject particle = ParticlePooling.particlePool.GetShieldParticle();
+        if (particle == null) return;
+        particle.transform.position = transform.position;
+        particle.transform.rotation = transform.rotation;
+        particle.SetActive(true);
     }
 
     IEnumerator ShieldPickup(Collider Player)

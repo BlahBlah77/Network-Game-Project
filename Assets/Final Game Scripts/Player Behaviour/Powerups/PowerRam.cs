@@ -11,18 +11,32 @@ public class PowerRam : MonoBehaviour {
 
     void Start()
     {
+        // Find the players present in the arena that have the player tag
         players = GameObject.FindGameObjectsWithTag("Player");
     }
 
     void OnTriggerEnter(Collider other)
     {
+        // loop through all the players in the array
+        // if ONE or more of the players collides with the powerup
+        // Start the couroutine for the powerup logic
         foreach (GameObject player in players)
         {
             if (other.gameObject == player)
             {
+                GenerateBigExplosion();
                 StartCoroutine(RamPickup(other));
             }
         }
+    }
+
+    void GenerateBigExplosion()
+    {
+        GameObject particle = ParticlePooling.particlePool.GetPowerRamParticle();
+        if (particle == null) return;
+        particle.transform.position = transform.position;
+        particle.transform.rotation = transform.rotation;
+        particle.SetActive(true);
     }
 
     IEnumerator RamPickup(Collider Player)
