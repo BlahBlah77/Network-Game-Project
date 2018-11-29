@@ -326,7 +326,7 @@ GameObject:
   - component: {fileID: 64374423532921938}
   m_Layer: 0
   m_Name: CarBody
-  m_TagString: Untagged
+  m_TagString: PlayerCol
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1529,6 +1529,7 @@ MonoBehaviour:
   damageRate: 1.2
   changeInDamage: 20
   minCollisionSpeed: 1
+  coolDownTime: 0.2
   speedText: {fileID: 114096586866099358}
   carLivesText: {fileID: 114441140686636486}
   score: {fileID: 114150824581593662}

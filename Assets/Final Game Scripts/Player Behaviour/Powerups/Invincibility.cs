@@ -20,15 +20,22 @@ public class Invincibility : MonoBehaviour {
         // loop through all the players in the array
         // if ONE or more of the players collides with the powerup
         // Start the couroutine for the powerup logic
-        foreach (GameObject player in players)
+        //foreach (GameObject player in players)
+        //{
+        //    if (other.gameObject == player)
+        //    {
+        //        GenerateWaterSplash();
+        //        carController = player.GetComponent<PlayerCar>();
+        //        carController.currentCarHealth = carController.maxCarHealth;
+        //        StartCoroutine(ShieldPickup(other));
+        //    }
+        //}
+        if (other.tag == "PlayerCol")
         {
-            if (other.gameObject == player)
-            {
-                GenerateWaterSplash();
-                carController = player.GetComponent<PlayerCar>();
-                carController.currentCarHealth = carController.maxCarHealth;
-                StartCoroutine(ShieldPickup(other));
-            }
+            GenerateWaterSplash();
+            carController = other.GetComponentInParent<PlayerCar>();
+            carController.currentCarHealth = carController.maxCarHealth;
+            StartCoroutine(ShieldPickup(other));
         }
     }
 
@@ -46,10 +53,10 @@ public class Invincibility : MonoBehaviour {
         // Instantiate some particle effects here...
         //Instantiate(particleShieldEffect, transform.position, transform.rotation);
 
-        for (int i = 0; i < players.Length; i++)
-        {
-            carController = players[i].GetComponent<PlayerCar>();
-        }
+        //for (int i = 0; i < players.Length; i++)
+        //{
+        //    carController = players[i].GetComponent<PlayerCar>();
+        //}
 
        // carController.currentCarHealth = carController.changeInDamage = 1; // take no damage
         GetComponent<BoxCollider>().enabled = false;

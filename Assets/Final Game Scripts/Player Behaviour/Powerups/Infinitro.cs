@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Infinitro : MonoBehaviour {
+public class Infinitro : Photon.MonoBehaviour
+{
 
     public GameObject[] players;
     GameObject particleInfinitroEffect;
@@ -12,7 +13,8 @@ public class Infinitro : MonoBehaviour {
     void Start()
     {
         // Find the players present in the arena that have the player tag
-        players = GameObject.FindGameObjectsWithTag("Player");
+       // players = GameObject.FindGameObjectsWithTag("Player");
+        //Debug.Log("I dunno");
     }
 
     void OnTriggerEnter(Collider other)
@@ -20,15 +22,23 @@ public class Infinitro : MonoBehaviour {
         // loop through all the players in the array
         // if ONE or more of the players collides with the powerup
         // Start the couroutine for the powerup logic
-        foreach (GameObject player in players)
+        //foreach (GameObject player in players)
+        //{
+        //    if (other.gameObject == player)
+        //    {
+        //        GenerateEnergyExplosion();
+        //        carController = player.GetComponent<PlayerCar>();
+        //        carController.currentNitro = carController.maxNitro;
+        //        StartCoroutine(InfinitroPickup(other));
+        //    }
+        //}
+
+        if (other.tag == "PlayerCol")
         {
-            if (other.gameObject == player)
-            {
-                GenerateEnergyExplosion();
-                carController = player.GetComponent<PlayerCar>();
-                carController.currentNitro = carController.maxNitro;
-                StartCoroutine(InfinitroPickup(other));
-            }
+            GenerateEnergyExplosion();
+            carController = other.GetComponentInParent<PlayerCar>();
+            carController.currentNitro = carController.maxNitro;
+            StartCoroutine(InfinitroPickup(other));
         }
 
     }
@@ -47,10 +57,10 @@ public class Infinitro : MonoBehaviour {
         // Instantiate some particle effects here...
         //Instantiate(particleInfinitroEffect, transform.position, transform.rotation);
 
-        for (int i = 0; i < players.Length; i++)
-        {
-            carController = players[i].GetComponent<PlayerCar>();
-        }
+        //for (int i = 0; i < players.Length; i++)
+        //{
+        //    carController = players[i].GetComponent<PlayerCar>();
+        //}
 
         carController.changeInNitro = 0;
         GetComponent<BoxCollider>().enabled = false;
@@ -67,4 +77,18 @@ public class Infinitro : MonoBehaviour {
         GetComponent<MeshRenderer>().enabled = true;
         GetComponent<Collider>().enabled = true;
     }
+    //void OnPhotonPlayerConnected(PhotonPlayer newPlay)
+    //{
+    //    StartCoroutine(Timer());
+    //    Debug.Log(newPlay.ID);
+    //}
+    //void OnPhotonPlayerDisconnected(PhotonPlayer newPlay)
+    //{
+    //    StartCoroutine(Timer());
+    //}
+    //IEnumerator Timer()
+    //{
+    //    yield return new WaitForSeconds(1.2f);
+    //    players = GameObject.FindGameObjectsWithTag("Player");
+    //}
 }
