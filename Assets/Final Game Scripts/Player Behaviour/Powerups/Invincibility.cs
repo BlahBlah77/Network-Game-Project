@@ -4,18 +4,32 @@ using UnityEngine;
 
 public class Invincibility : MonoBehaviour {
 
-    public GameObject player;
+    public GameObject[] players;
     GameObject particleShieldEffect;
     PlayerCar carController;
     float timer = 20;
 
+    void Start()
+    {
+        players = GameObject.FindGameObjectsWithTag("Player");
+    }
+
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject == player)
+
+        //for (int i = 0; i < players.Length; i++)
+        //{
+        //    carController = players[i].GetComponent<PlayerCar>();
+        //}
+
+        foreach (GameObject player in players)
         {
-            carController = player.GetComponent<PlayerCar>();
-            carController.currentCarHealth = carController.maxCarHealth;
-            StartCoroutine(ShieldPickup(other));
+            if (other.gameObject == player)
+            {
+                carController = player.GetComponent<PlayerCar>();
+                carController.currentCarHealth = carController.maxCarHealth;
+                StartCoroutine(ShieldPickup(other));
+            }
         }
     }
 
@@ -23,14 +37,19 @@ public class Invincibility : MonoBehaviour {
     {
         // Instantiate some particle effects here...
         //Instantiate(particleShieldEffect, transform.position, transform.rotation);
-        carController = player.GetComponent<PlayerCar>();
-        carController.changeInDamage = 0; // testing for simulating player damage 
+
+        for (int i = 0; i < players.Length; i++)
+        {
+            carController = players[i].GetComponent<PlayerCar>();
+        }
+
+       // carController.currentCarHealth = carController.changeInDamage = 1; // take no damage
         GetComponent<BoxCollider>().enabled = false;
         GetComponent<MeshRenderer>().enabled = false;
         GetComponent<Collider>().enabled = false;
         Invoke("RespawnInvincibility", 5f); // respawn back the powerup after 2 seconds (testing)
         yield return new WaitForSeconds(timer);
-        carController.changeInDamage = 5; // reset the damage back to five (testing)
+        //carController.currentCarHealth = carController.changeInDamage = 20; // reset the damage back to five (testing)
     }
 
     void RespawnInvincibility()

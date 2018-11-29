@@ -4,16 +4,24 @@ using UnityEngine;
 
 public class PowerRam : MonoBehaviour {
 
-    public GameObject player;
+    public GameObject[] players;
     GameObject particleRamEffect;
     PlayerCar carController;
     float timer = 10;
 
+    void Start()
+    {
+        players = GameObject.FindGameObjectsWithTag("Player");
+    }
+
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject == player)
+        foreach (GameObject player in players)
         {
-            StartCoroutine(RamPickup(other));
+            if (other.gameObject == player)
+            {
+                StartCoroutine(RamPickup(other));
+            }
         }
     }
 
@@ -21,14 +29,19 @@ public class PowerRam : MonoBehaviour {
     {
         // Instantiate some particle effects here...
         //Instantiate(particleRamEffect, transform.position, transform.rotation);
-        carController = player.GetComponent<PlayerCar>();
-        carController.damageRate = 1.2f; // modify damage to 1.2 times more
+
+        for (int i = 0; i < players.Length; i++)
+        {
+            carController = players[i].GetComponent<PlayerCar>();
+        }
+
+        carController.damageRate = 1.5f; // modify damage to 1.2 times more
         GetComponent<BoxCollider>().enabled = false;
         GetComponent<MeshRenderer>().enabled = false;
         GetComponent<Collider>().enabled = false;
         Invoke("RespawnPowerRam", 5f);
         yield return new WaitForSeconds(timer);
-        carController.damageRate = 0.2f; // bring it back down to the original damage hit rate
+        carController.damageRate = 0.8f; // bring it back down to the original damage hit rate
     }
 
     void RespawnPowerRam()

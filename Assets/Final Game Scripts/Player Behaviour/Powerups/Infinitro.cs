@@ -4,26 +4,41 @@ using UnityEngine;
 
 public class Infinitro : MonoBehaviour {
 
-    public GameObject player;
+    public GameObject[] players;
     GameObject particleInfinitroEffect;
     PlayerCar carController;
     float timer = 20;
 
+    void Start()
+    {
+        players = GameObject.FindGameObjectsWithTag("Player");
+    }
+
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject == player)
+
+        foreach (GameObject player in players)
         {
-            carController = player.GetComponent<PlayerCar>();
-            carController.currentNitro = carController.maxNitro;
-            StartCoroutine(InfinitroPickup(other));
+            if (other.gameObject == player)
+            {
+                carController = player.GetComponent<PlayerCar>();
+                carController.currentNitro = carController.maxNitro;
+                StartCoroutine(InfinitroPickup(other));
+            }
         }
+
     }
 
     IEnumerator InfinitroPickup(Collider Player)
     {
         // Instantiate some particle effects here...
         //Instantiate(particleInfinitroEffect, transform.position, transform.rotation);
-        carController = player.GetComponent<PlayerCar>();
+
+        for (int i = 0; i < players.Length; i++)
+        {
+            carController = players[i].GetComponent<PlayerCar>();
+        }
+
         carController.changeInNitro = 0;
         GetComponent<BoxCollider>().enabled = false;
         GetComponent<MeshRenderer>().enabled = false;

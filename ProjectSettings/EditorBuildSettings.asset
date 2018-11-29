@@ -4,17 +4,4 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes:
-  - enabled: 1
-    path: Assets/Resources/Luke Folders/_Scenes/lvl_Test_LoadingData.unity
-    guid: d9f75a8f526ea4848914988d0f4445c7
-  - enabled: 1
-    path: Assets/Resources/Luke Folders/_Scenes/lvl_Test1.unity
-    guid: c0fce9c7e6734e94ba244eb406edc5af
-  - enabled: 1
-    path: Assets/Resources/Luke Folders/_Scenes/lvl_Test_Lobby.unity
-    guid: 98ed5c3b9b00ce741b8d328ee1f9501c
-  - enabled: 1
-    path: Assets/Arena.unity
-    guid: 8cb208d294626c14e9984847fb76ddd0
-  m_configObjects: {}
+  m_Scenes: []
