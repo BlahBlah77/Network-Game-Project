@@ -118,10 +118,10 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
 
     void Update()
     {
-        //if (!photonView.isMine)
-        //{
-        //    return;
-        //}
+        if (!photonView.isMine)
+        {
+            return;
+        }
 
         CarMechanics();
         ShowAllPlayerUI();
@@ -170,14 +170,14 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
             obj.GetComponent<PlayerCar>().players.Add(this);
         }
 
-        //if (!photonView.isMine)
-        //{
-        //    // Disables unneeded cameras and Ui
-        //    mainCamera.gameObject.SetActive(false);
-        //    minimapCamera.gameObject.SetActive(false);
-        //    mainCan.gameObject.SetActive(false);
-        //    return;
-        //}
+        if (!photonView.isMine)
+        {
+            // Disables unneeded cameras and Ui
+            mainCamera.gameObject.SetActive(false);
+            minimapCamera.gameObject.SetActive(false);
+            mainCan.gameObject.SetActive(false);
+            return;
+        }
     }
 
     #region ("Car Movement Mechanics")
@@ -452,8 +452,8 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
                         damgeObject.Damage(collisionSpeed * damageRate);
 
                         // --- ACTIVATE THIS CODE ONLINE FOR THE DAMAGE TO WORK --- //
-                        //canTakeDamage = false;
-                        //StartCoroutine(ReactivateDamage());
+                        canTakeDamage = false;
+                        StartCoroutine(ReactivateDamage());
 
                         UpdateNitroRate(0, nitroRandNumber); //Update Nitro 
                         AddScore(10);
@@ -685,12 +685,6 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     {
         players = new List<PlayerCar>();
         Debug.Log("Isn't this where");
-        //var obj = GameObject.FindGameObjectsWithTag("Player");
-        //for (int i = 0; i < obj.Length; i++)
-        //{
-        //    players.Add(obj[i].GetComponent<PlayerCar>());
-        //}
-
         StartCoroutine(DisconnectTime());
     }
 

@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 15
-  productGUID: 00000000000000000000000000000000
+  productGUID: 795ceb472d0fde545a3acfe5fa91ab72
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -726,7 +726,7 @@ PlayerSettings:
   facebookSdkVersion: 7.9.1
   apiCompatibilityLevel: 2
   cloudProjectId: c9763518-025a-446e-a3e5-69857e4ba254
-  projectName: EffectsExamples
+  projectName: Network Game
   organizationId: gameboy95
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
