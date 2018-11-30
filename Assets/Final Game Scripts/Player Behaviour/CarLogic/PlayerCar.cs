@@ -122,11 +122,9 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         {
             return;
         }
-
+ 
         CarMechanics();
         ShowAllPlayerUI();
-        CarWreaked(); // TESTTTINNGGG
-        PressKeyToDamage(); // TESTING
     }
 
     public void VicChecker()
@@ -162,7 +160,6 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         currentNitro = maxNitro; // current nitro is now equal to the max nitro (100 at the start)
         currentCarHealth = maxCarHealth;
         currentLives = maxLives; // current player lives is 3
-        //players.AddRange(GameObject.FindGameObjectsWithTag("Player"));
 
         var objs = GameObject.FindGameObjectsWithTag("Player");
         foreach (var obj in objs)
@@ -503,7 +500,7 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     #region ("All Callable Player UI Functions")
     void ShowSpeedUI()
     {
-        speedText.text = "SPEED: " + (int)actualSpeed + " mph";
+        speedText.text = "SPEED : " + (int)actualSpeed + " mph";
     }
     void ShowNitrousUI()
     {
@@ -519,9 +516,6 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         // Take -1 from players life if the players life is zero
         if (currentCarHealth <= 0 && currentLives <= 3)
         {
-            // Instantiate a particle effect here
-            // Wait some seconds to go back into the game?
-            // Do the rest down here...
             currentLives--;
             currentCarHealth = 100;
         }
@@ -533,15 +527,11 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
             currentLives = 0;
             currentCarHealth = 0;
             StopAllCoroutines(); 
-
-            //SPACE TO WRITE NETWORK CODE HERE...
-            //Out of the game can no longer play
         }
 
         if (currentCarHealth == 0)
         {
             isDead = true;
-            //this.gameObject.SetActive(false);
             if (photonView.isMine)
             {
                 stateText.text = "You Lose";
@@ -553,24 +543,10 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
             {
                 Destroy(gameObject);
 
-                //foreach (PlayerCar pl in players)
-                //{
-             
-                //    pl.VicChecker();
-                //}
             }
-            //Disable();
-
-            // Go back to lobby???
             Debug.Log("Player is out of the game");
         }
     }
-
-    //[PunRPC]
-    //void Disable()
-    //{
-    //    this.enabled = false;
-    //}
 
     void ShowHealth()
     {
@@ -583,7 +559,7 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     void ShowRankingScore()
     {
         // Initial ranking of nothing until conditions are met.
-        rankingText.text = "Ranking: ";
+        rankingText.text = "Ranking : ";
 
         if (scoreValue >= 10 && scoreValue <= 19)
         {
@@ -643,14 +619,6 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
         string seconds = (t % 60).ToString("f2");
         timerText.text = "Time: " + minutes + ":" + seconds;
     }
-    void CarWreaked()
-    {
-        if (currentCarHealth <= 0)
-        {
-            currentCarHealth = 0;
-            Debug.Log("You are wreaked");
-        }
-    }
     #endregion
 
 
@@ -700,13 +668,5 @@ public class PlayerCar : Photon.MonoBehaviour, IDamageable
     void TestCarDamage(float damageRate)
     {
         currentCarHealth -= damageRate * Time.deltaTime;
-    }
-
-    void PressKeyToDamage()
-    {
-        if (Input.GetKey(KeyCode.R))
-        {
-            TestCarDamage(changeInDamage);
-        }
     }
 }
